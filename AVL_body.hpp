@@ -6,7 +6,7 @@
 /*   By: sakllam <sakllam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 16:16:14 by sakllam           #+#    #+#             */
-/*   Updated: 2022/08/20 19:46:29 by sakllam          ###   ########.fr       */
+/*   Updated: 2022/08/20 20:34:45 by sakllam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,19 +176,28 @@ namespace ft
                     *root = NULL;
                     return ;
                 }
-                if ((*root)->left == NULL)
+                // if ((*root)->left == NULL)
+                // {
+                //     std::cout << "alo alo?\n";
+                //     avl<T> *right = (*root)->right;
+                //     alloc.destroy(*root);
+                //     alloc.deallocate(*root, 1);
+                //     *root = right;
+                //     return;
+                // }
+                
+                if ((*root)->right == NULL)
                 {
-                    avl<T> *right = (*root)->right;
+                    avl<T> *left = (*root)->left;
                     alloc.destroy(*root);
                     alloc.deallocate(*root, 1);
-                    *root = right;
-                    balancing(root);
+                    *root = left;
                     return;
                 }
                 avl<T> *deep = deepest((*root)->left);
-                // (*root)->right = deep->right;
                 (*root)->value = deep->value;
-                remove(&((*root)->left), value);
+                remove(&((*root)->left), deep->value);
+                (*root)->left = deep->left;
                 balancing(root);
             }
         }
