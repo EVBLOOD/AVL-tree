@@ -6,7 +6,7 @@
 /*   By: sakllam <sakllam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 16:16:14 by sakllam           #+#    #+#             */
-/*   Updated: 2022/08/19 18:29:27 by sakllam          ###   ########.fr       */
+/*   Updated: 2022/08/20 19:12:24 by sakllam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <memory>
 #include <iostream>
+#include <system_error>
 
 namespace ft
 {
@@ -52,38 +53,52 @@ namespace ft
         allocator_type  alloc;
         compare_type    cmp;
 
+        
+        void    right_rotation(avl<type_name> **root)
+        {
+            avl<type_name> *roottmp = *root;
+            *root = (*root)->left;
+            avl<type_name> *righttmp = (*root)->right;
+            (*root)->right = roottmp;
+            roottmp->left = righttmp;
+        }
+        void    left_rotation(avl<type_name> **root)
+        {
+            avl<type_name> *roottmp = *root;
+            *root = (*root)->right;
+            avl<type_name> *righttmp = (*root)->left;
+            (*root)->left = roottmp;
+            roottmp->right = righttmp;
+        }
+
         void    insert(avl<type_name> **root, avl<type_name> *_new, avl<type_name> *parent)
         {
             if (*root == NULL)
             {
-                std::cout << "?????\n";
-                // exit (1);
                 *root = _new;
                 return;
             }
-            if (cmp(_new->value, (*root)->value))
+            if (cmp((*root)->value, _new->value))
                 insert(&((*root)->right), _new, *root);
             else
                 insert(&((*root)->left), _new, *root);
             if (abs(size((*root)->right) - size((*root)->left)) > 1)
             {
+                std::cerr << "right size : " << size((*root)->right) << ", left size : " << size((*root)->left) << "\n";
                if (size((*root)->right) > size((*root)->left))
                {
                    // right to fix
                     std::cout << "right to fix\n";
                    if (((*root)->right)->right) // well this is left rotation
                    {
-                       std::cout << "well this is left rotation\n";
-                        avl<type_name> *tmprot = *root;
-                        (*root) = (*root)->left;
-                        avl<type_name> *tmpl = (*root)->right;
-                        (*root)->right = tmprot;
-                        tmprot->left = tmpl;
+                        std::cout << "well this is left rotation\n";
+                        left_rotation(root);
                    }
                    else // well this is an right - left rotation
                    {
-                    //    avl<type_name> *tmprot = *root;
                     std::cout << "well this is an right - left rotation\n";
+                    right_rotation(root);
+                    left_rotation(root);
                    }
                }
                else
@@ -93,22 +108,13 @@ namespace ft
                    if (((*root)->left)->left) // well this is right rotation
                    {
                        std::cout << "well this is right rotation\n";
-                       std::cerr << "start\n";
-                       avl<type_name> *tmprot = *root;
-                       (*root) = (*root)->right;
-                        std::cerr << "end\n";
-                       if ((*root)->left)
-                       {
-                        avl<type_name> *tmpl = (*root)->left;
-                        (*root)->left = tmprot;
-                           
-                        if (tmprot->right)
-                        tmprot->right = tmpl;
-                       }
+                        right_rotation(root);
                    }
                    else  // well this is an left - right rotation
                    {
-                       std::cout << "well this is an left - right rotation\n";
+                        std::cout << "well this is an left - right rotation\n";
+                        left_rotation(&((*root)->left));
+                        right_rotation(root);
                    }
                }
             }
@@ -123,7 +129,15 @@ namespace ft
         {
             if (root == NULL)
                 return -1;
-            return max(size(root->left), size(root->right)) + 1;
+            return (max(size(root->left), size(root->right)) + 1);
+        }
+        void printing(avl<T> *root, std::string name, int i)
+        {
+            if (!root)
+                return;
+            std::cout << i << "  " <<  name << " :" << root->value << std::endl;
+            printing(root->right, "right", i + 1);
+            printing(root->left, "left", i + 1);
         }
         public :
             AVL_body() : root(NULL) {}
@@ -143,6 +157,10 @@ namespace ft
             int    size()
             {
                 return size(this->root);
+            }
+            void printing()
+            {
+                printing(this->root, "root", 0);
             }
     };
 }
