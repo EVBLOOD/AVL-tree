@@ -6,27 +6,31 @@
 /*   By: sakllam <sakllam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 18:13:42 by sakllam           #+#    #+#             */
-/*   Updated: 2022/08/20 20:32:40 by sakllam          ###   ########.fr       */
+/*   Updated: 2022/08/20 21:44:48 by sakllam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "AVL_body.hpp"
+#include <algorithm>
 
 int main()
 {
     ft::AVL_body<int> x;
 
-    x.insert(1);
-    x.insert(3);
+    // std::cout << x.size() << "\n";
+    // x.insert(1);
+    // x.insert(3);
     // x.insert(2);
     // x.insert();
-    // x.insert(20);
-    // x.insert(10);
-    // x.insert(30);
-    // x.insert(50);
-    // x.insert(25);
-    // x.insert(55);
+    x.insert(20);
+    x.insert(10);
+    x.insert(30);
+    x.insert(50);
+    x.insert(25);
+    x.insert(55);
     x.remove(1);
+    // std::cout << "go ahead and find ===> 10 that exists : " << x.find(10) << "\n";
+    // std::cout << "go ahead and find ===> 54 that !exists : " << x.find(54) << "\n";
     // x.insert(1);
     // x.insert(-3);
     // x.insert(-2);
