@@ -6,7 +6,7 @@
 /*   By: sakllam <sakllam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 16:16:14 by sakllam           #+#    #+#             */
-/*   Updated: 2022/08/20 19:12:24 by sakllam          ###   ########.fr       */
+/*   Updated: 2022/08/20 19:46:29 by sakllam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,32 @@ namespace ft
             (*root)->left = roottmp;
             roottmp->right = righttmp;
         }
-
+        void balancing(avl<type_name> **root)
+        {
+            if (abs(size((*root)->right) - size((*root)->left)) > 1)
+            {
+               if (size((*root)->right) > size((*root)->left))
+               {
+                   if (((*root)->right)->right)
+                        left_rotation(root);
+                   else
+                   {
+                    right_rotation(root);
+                    left_rotation(root);
+                   }
+               }
+               else
+               {
+                   if (((*root)->left)->left)
+                       right_rotation(root);
+                   else
+                   {
+                        left_rotation(&((*root)->left));
+                        right_rotation(root);
+                   }
+               }
+            }
+        }
         void    insert(avl<type_name> **root, avl<type_name> *_new, avl<type_name> *parent)
         {
             if (*root == NULL)
@@ -82,42 +107,30 @@ namespace ft
                 insert(&((*root)->right), _new, *root);
             else
                 insert(&((*root)->left), _new, *root);
-            if (abs(size((*root)->right) - size((*root)->left)) > 1)
-            {
-                std::cerr << "right size : " << size((*root)->right) << ", left size : " << size((*root)->left) << "\n";
-               if (size((*root)->right) > size((*root)->left))
-               {
-                   // right to fix
-                    std::cout << "right to fix\n";
-                   if (((*root)->right)->right) // well this is left rotation
-                   {
-                        std::cout << "well this is left rotation\n";
-                        left_rotation(root);
-                   }
-                   else // well this is an right - left rotation
-                   {
-                    std::cout << "well this is an right - left rotation\n";
-                    right_rotation(root);
-                    left_rotation(root);
-                   }
-               }
-               else
-               {
-                   // left to fix
-                   std::cout << "left to fix\n";
-                   if (((*root)->left)->left) // well this is right rotation
-                   {
-                       std::cout << "well this is right rotation\n";
-                        right_rotation(root);
-                   }
-                   else  // well this is an left - right rotation
-                   {
-                        std::cout << "well this is an left - right rotation\n";
-                        left_rotation(&((*root)->left));
-                        right_rotation(root);
-                   }
-               }
-            }
+            // if (abs(size((*root)->right) - size((*root)->left)) > 1)
+            // {
+            //    if (size((*root)->right) > size((*root)->left))
+            //    {
+            //        if (((*root)->right)->right)
+            //             left_rotation(root);
+            //        else
+            //        {
+            //         right_rotation(root);
+            //         left_rotation(root);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (((*root)->left)->left)
+            //            right_rotation(root);
+            //        else
+            //        {
+            //             left_rotation(&((*root)->left));
+            //             right_rotation(root);
+            //        }
+            //    }
+            // }
+            balancing(root);
         }
         int max(int a, int b)
         {
@@ -138,6 +151,46 @@ namespace ft
             std::cout << i << "  " <<  name << " :" << root->value << std::endl;
             printing(root->right, "right", i + 1);
             printing(root->left, "left", i + 1);
+        }
+        avl<T> *deepest(avl<T> *root)
+        {
+            if (root->right == NULL)
+                return root;
+            return deepest(root->right);
+        }
+        
+        void remove(avl<T> **root, type_name value)
+        {
+            if (*root == NULL)
+                return ;
+            if (cmp((*root)->value, value))
+                remove(&((*root)->right), value);
+            else if (cmp(value, (*root)->value))
+                remove(&((*root)->left), value);
+            else
+            {
+                if ((*root)->left == NULL && (*root)->right == NULL)
+                {
+                    alloc.destroy(*root);
+                    alloc.deallocate(*root, 1);
+                    *root = NULL;
+                    return ;
+                }
+                if ((*root)->left == NULL)
+                {
+                    avl<T> *right = (*root)->right;
+                    alloc.destroy(*root);
+                    alloc.deallocate(*root, 1);
+                    *root = right;
+                    balancing(root);
+                    return;
+                }
+                avl<T> *deep = deepest((*root)->left);
+                // (*root)->right = deep->right;
+                (*root)->value = deep->value;
+                remove(&((*root)->left), value);
+                balancing(root);
+            }
         }
         public :
             AVL_body() : root(NULL) {}
@@ -161,6 +214,10 @@ namespace ft
             void printing()
             {
                 printing(this->root, "root", 0);
+            }
+            void remove(type_name c)
+            {
+                remove(&(this->root), c);
             }
     };
 }
