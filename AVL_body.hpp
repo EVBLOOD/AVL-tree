@@ -6,7 +6,7 @@
 /*   By: sakllam <sakllam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 16:16:14 by sakllam           #+#    #+#             */
-/*   Updated: 2022/08/20 21:44:31 by sakllam          ###   ########.fr       */
+/*   Updated: 2022/08/21 11:24:41 by sakllam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,14 +151,6 @@ namespace ft
                     alloc.destroy(*root);
                     alloc.deallocate(*root, 1);
                     *root = right;
-                    return;
-                }
-                if ((*root)->right == NULL)
-                {
-                    avl<T> *left = (*root)->left;
-                    alloc.destroy(*root);
-                    alloc.deallocate(*root, 1);
-                    *root = left;
                     return;
                 }
                 avl<T> *deep = deepest((*root)->left);
