@@ -6,7 +6,7 @@
 /*   By: sakllam <sakllam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 16:16:14 by sakllam           #+#    #+#             */
-/*   Updated: 2022/09/07 13:00:07 by sakllam          ###   ########.fr       */
+/*   Updated: 2022/09/07 21:05:57 by sakllam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ namespace ft
             }
             if (cmp((*root)->value, _new->value))
                 return (insert(&((*root)->right), _new), balancing(root));
-            else if (cmp(_new->value, (*root)->value))
+            if (cmp(_new->value, (*root)->value))
                 return (insert(&((*root)->left), _new), balancing(root));
             return;
         }
