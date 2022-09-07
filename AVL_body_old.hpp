@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sakllam <sakllam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/07 21:28:49 by sakllam           #+#    #+#             */
-/*   Updated: 2022/09/07 21:30:41 by sakllam          ###   ########.fr       */
+/*   Created: 2022/08/18 16:16:14 by sakllam           #+#    #+#             */
+/*   Updated: 2022/09/07 21:05:57 by sakllam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,9 @@ namespace ft
         type_name       value;
         avl<type_name>  *right;  
         avl<type_name>  *left;
-        int             height;
         
-        avl() : value(type_name()), right(NULL), left(NULL), height(int()) {}
-        avl(avl *right, avl *left, type_name value) : value(value), right(right), left(left), height(int()) {}
+        avl() : value(type_name()), right(NULL), left(NULL) {}
+        avl(avl *right, avl *left, type_name value) : value(value), right(right), left(left) {}
     };
 
     template<class T, class Compare = std::less<T>, class Alloc = std::allocator<avl<T> > >
@@ -46,23 +45,29 @@ namespace ft
         allocator_type  alloc;
         compare_type    cmp;
 
-        int max(int a, int b)
+        void    right_rotation(avl<type_name> **root)
         {
-            if (a > b)
-                return a;
-            return b;
+            avl<type_name> *roottmp = *root;
+            *root = (*root)->left;
+            avl<type_name> *righttmp = (*root)->right;
+            (*root)->right = roottmp;
+            roottmp->left = righttmp;
         }
-        int get_size(avl<type_name> *root)
+        void    left_rotation(avl<type_name> **root)
         {
-            if (root == NULL)
-                return 0;
-            return root->height;
+            avl<type_name> *roottmp = *root;
+            *root = (*root)->right;
+            avl<type_name> *righttmp = (*root)->left;
+            (*root)->left = roottmp;
+            roottmp->right = righttmp;
         }
         void balancing(avl<type_name> **root)
         {
-            if (abs(get_size((*root)->left) - get_size((*root)->right)) > 1)
+            int sizer = size((*root)->right);
+            int sizel = size((*root)->left);
+            if (abs(sizer - sizel) > 1)
             {
-               if (get_size((*root)->right) > get_size((*root)->left))
+               if (sizer > sizel)
                {
                    if ((*root)->right->right)
                         return left_rotation(root);
@@ -75,16 +80,7 @@ namespace ft
                 return right_rotation(root);
             }
         }
-        avl<T>    *newone(type_name value)
-        {
-            avl<T> *c = alloc.allocate(1);
-            c->height = 1;
-            c->value = value;
-            c->left = NULL;
-            c->right = NULL;
-            return c;
-        }
-        void    insert_helper(avl<type_name> **root, avl<type_name> *_new)
+        void    insert(avl<type_name> **root, avl<type_name> *_new)
         {
             if (*root == NULL)
             {
@@ -92,43 +88,28 @@ namespace ft
                 return;
             }
             if (cmp((*root)->value, _new->value))
-                insert_helper(&((*root)->right), _new);
-            else if (cmp(_new->value, (*root)->value))
-                insert_helper(&((*root)->left), _new);
-            else
-                return;
-            (*root)->height = heightcount(*root);;
-            balancing(root);
+                return (insert(&((*root)->right), _new), balancing(root));
+            if (cmp(_new->value, (*root)->value))
+                return (insert(&((*root)->left), _new), balancing(root));
+            return;
         }
-        int heightcount(avl<type_name> *root)
+        int max(int a, int b)
         {
-            return max(get_size(root->left), get_size(root->right)) + 1;
+            if (a > b)
+                return a;
+            return b;
         }
-        void    right_rotation(avl<type_name> **root)
+        int size(avl<T> *root)
         {
-            avl<type_name> *roottmp = *root;
-            *root = (*root)->left;
-            avl<type_name> *righttmp = (*root)->right;
-            (*root)->right = roottmp;
-            roottmp->left = righttmp;
-            (*root)->right->height = heightcount((*root)->right);
-            (*root)->height = heightcount(*root);
-        }
-        void    left_rotation(avl<type_name> **root)
-        {
-            avl<type_name> *roottmp = *root;
-            *root = (*root)->right;
-            avl<type_name> *righttmp = (*root)->left;
-            (*root)->left = roottmp;
-            roottmp->right = righttmp;
-            (*root)->left->height = heightcount((*root)->left);
-            (*root)->height = heightcount(*root);
+            if (root == NULL)
+                return 0;
+            return (max(size(root->left), size(root->right)) + 1);
         }
         void printing(avl<T> *root, std::string name, int i)
         {
             if (!root)
                 return;
-            std::cout << i << "  " <<  name << " :" << root->value << " -> " << root->height << std::endl;
+            std::cout << i << "  " <<  name << " :" << root->value << std::endl;
             printing(root->right, "right", i + 1);
             printing(root->left, "left", i + 1);
         }
@@ -139,14 +120,14 @@ namespace ft
             return deepest(root->right);
         }
         
-        void remove_helper(avl<T> **root, type_name value)
+        void remove(avl<T> **root, type_name value)
         {
             if (*root == NULL)
                 return ;
             if (cmp((*root)->value, value))
-                remove_helper(&((*root)->right), value);
+                remove(&((*root)->right), value);
             else if (cmp(value, (*root)->value))
-                remove_helper(&((*root)->left), value);
+                remove(&((*root)->left), value);
             else
             {
                 if ((*root)->left == NULL && (*root)->right == NULL)
@@ -162,38 +143,40 @@ namespace ft
                     alloc.destroy(*root);
                     alloc.deallocate(*root, 1);
                     *root = right;
-                    (*root)->height = heightcount(*root);
-                    return;
-                }
-                if ((*root)->right == NULL)
-                {
-                    avl<T> *left = (*root)->left;
-                    alloc.destroy(*root);
-                    alloc.deallocate(*root, 1);
-                    *root = left;
-                    (*root)->height = heightcount(*root);
+                    balancing(root);
                     return;
                 }
                 avl<T> *deep = deepest((*root)->left);
                 (*root)->value = deep->value;
-                remove_helper(&((*root)->left), deep->value);
+                remove(&((*root)->left), deep->value);
             }
-            (*root)->height = heightcount(*root);
             balancing(root);
         }
-        bool find_helper(avl<T> *root, T value)
+        bool find(avl<T> *root, T value)
         {
             if (root == NULL)
               return false;
             if (root->value ==  value)
                 return true;
-            return find_helper(root->left, value) || find_helper(root->right, value);
+            return find(root->left, value) || find(root->right, value);
+        }
+        avl<T>    *newone(type_name value)
+        {
+            avl<T> *c = alloc.allocate(1);
+            c->value = value;
+            c->left = NULL;
+            c->right = NULL;
+            return c;
         }
         public :
             AVL_body() : root(NULL) {}
             void    insert(type_name x)
             {
-                insert_helper(&root, newone(x));
+                insert(&root, newone(x));
+            }
+            int    size()
+            {
+                return size(this->root);
             }
             void printing()
             {
@@ -201,11 +184,11 @@ namespace ft
             }
             void remove(type_name c)
             {
-                remove_helper(&(this->root), c);
+                remove(&(this->root), c);
             }
             bool find(type_name value)
             {
-                return find_helper(root, value);
+                return find(root, value);
             }
     };
 }
