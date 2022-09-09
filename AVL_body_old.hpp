@@ -6,7 +6,7 @@
 /*   By: sakllam <sakllam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 16:16:14 by sakllam           #+#    #+#             */
-/*   Updated: 2022/09/07 21:59:08 by sakllam          ###   ########.fr       */
+/*   Updated: 2022/09/09 16:25:44 by sakllam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,6 +172,7 @@ namespace ft
         avl<T>    *newone(type_name value)
         {
             avl<T> *c = alloc.allocate(1);
+            alloc.construct(c);
             c->value = value;
             c->left = NULL;
             c->right = NULL;

@@ -6,7 +6,7 @@
 /*   By: sakllam <sakllam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 21:28:49 by sakllam           #+#    #+#             */
-/*   Updated: 2022/09/08 13:50:41 by sakllam          ###   ########.fr       */
+/*   Updated: 2022/09/09 16:20:39 by sakllam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <algorithm>
+#include <cstring>
 #include <memory>
 #include <iostream>
 #include <system_error>
@@ -25,13 +26,14 @@ namespace ft
     {
         typedef T type_name;
 
-        type_name       *value;
+        type_name       value;
         avl<type_name>  *right;  
         avl<type_name>  *left;
-        int             height;
+        int             height; // to make it faster as posible I save height,
+                                    //to avoid calculating it each time I need to check balancing!
         
         avl() : value(type_name()), right(NULL), left(NULL), height(int()) {}
-        avl(avl *right, avl *left, type_name value) : value(value), right(right), left(left), height(int()) {}
+        avl(type_name value) : value(value), right(NULL), left(NULL), height(1) {}
     };
 
     template<class T, class Compare = std::less<T>, class Alloc = std::allocator<avl<T> > >
@@ -75,13 +77,10 @@ namespace ft
                 return right_rotation(root);
             }
         }
-        avl<T>    *newone(type_name value)
+        avl<type_name>    *newone(type_name value)
         {
-            avl<T> *c = alloc.allocate(1);
-            c->height = 1;
-            c->value = new type_name(value);
-            c->left = NULL;
-            c->right = NULL;
+            avl<type_name> *c = alloc.allocate(1);
+            alloc.construct(c, value);
             return c;
         }
         void    insert_helper(avl<type_name> **root, avl<type_name> *_new)
@@ -91,9 +90,9 @@ namespace ft
                 *root = _new;
                 return;
             }
-            if (cmp(*((*root)->value), *(_new->value)))
+            if (cmp((*root)->value, _new->value))
                insert_helper(&((*root)->right), _new);
-            else if (cmp(*(_new->value), *((*root)->value)))
+            else if (cmp(_new->value, (*root)->value))
                 insert_helper(&((*root)->left), _new);
             else
                 return;
@@ -138,14 +137,13 @@ namespace ft
                 return root;
             return deepest(root->right);
         }
-        
         void remove_helper(avl<T> **root, type_name value)
         {
             if (*root == NULL)
                 return ;
-            if (cmp(*((*root)->value), value))
+            if (cmp((*root)->value, value))
                 remove_helper(&((*root)->right), value);
-            else if (cmp(value, *((*root)->value)))
+            else if (cmp(value, (*root)->value))
                 remove_helper(&((*root)->left), value);
             else
             {
@@ -176,7 +174,7 @@ namespace ft
                 }
                 avl<T> *deep = deepest((*root)->left);
                 (*root)->value = deep->value;
-                remove_helper(&((*root)->left), *((*root)->value));
+                remove_helper(&((*root)->left), (*root)->value);
             }
             (*root)->height = heightcount(*root);
             balancing(root);
@@ -185,15 +183,24 @@ namespace ft
         {
             if (root == NULL)
               return false;
-            if (cmp(*(root->value), value))
+            if (cmp(root->value, value))
                 return  find_helper(root->right, value);
-            else if (cmp(value, *(root->value)))
+            else if (cmp(value, root->value))
                 return find_helper(root->left, value);
             else
                 return true;
         }
+        void helperfree_tree(avl<type_name> *x)
+        {
+            if (x == NULL)
+                return;
+            helperfree_tree(x->right);
+            helperfree_tree(x->left);
+            alloc.deallocate(x, 1);
+        }
         public :
             AVL_body() : root(NULL) {}
+            ~AVL_body() { helperfree_tree(root); }
             void    insert(type_name x)
             {
                 insert_helper(&root, newone(x));
