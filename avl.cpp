@@ -6,25 +6,61 @@
 /*   By: sakllam <sakllam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 18:13:42 by sakllam           #+#    #+#             */
-/*   Updated: 2022/09/07 21:25:47 by sakllam          ###   ########.fr       */
+/*   Updated: 2022/09/08 19:01:07 by sakllam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "AVL_body.hpp"
+#include "pro_one.hpp"
 #include <algorithm>
+#include <set>
+#include <string>
 
+// class joke
+// {
+//     public:
+//   int i;
+// //   joke &operator=(joke x);
+// };
+// bool operator<(joke const x, joke const y)
+// {
+//     return x.i < y.i;
+// }
+
+// bool operator>(joke const x, joke const y)
+// {
+//     return x.i < y.i;
+// }
+// //  joke& joke::operator=(joke x)
+// //   {
+// //       return *this;
+// //   }
 int main()
 {
-    ft::AVL_body<int> x;
+    // ft::AVL_body<joke> on_me;
+
+    // for (int i = 0; i < 1000000; i++)
+    // {
+    //     joke haha;
+    //     haha.i = i;
+    //     on_me.insert(haha);
+        
+    // }
+    ft::AVL_body<std::string> x;
+    // std::set<int> x;
 
     // std::cout << x.size() << "\n";
     // for (int i = 0; i < 100000; i++)
     //     x.insert(i);
+    std::string buffer = "a";
     for (int i = 0; i < 100000; i++)
-        x.insert(i);
-    for (int i = 100000; i > 0; i--)
-        x.remove(i);
-    x.printing();
+    {
+        buffer = buffer + "a";
+    std::cout << i << " "<< buffer.length() << " " << sizeof(buffer) << std::endl;
+        x.insert(buffer);
+    }
+    // for (int i = 100000; i > 0; i--)
+    //     x.find(i);
+    // x.printing();
     // x.insert(2);
     // x.insert(1);
     // // x.insert();
@@ -42,5 +78,5 @@ int main()
     // x.insert(-2);
     // x.insert(-1);
     // x.insert(5);
-    // x.printing();
+    // on_me.printing();
 }

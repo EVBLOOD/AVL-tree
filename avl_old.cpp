@@ -6,24 +6,36 @@
 /*   By: sakllam <sakllam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 18:13:42 by sakllam           #+#    #+#             */
-/*   Updated: 2022/09/07 21:30:21 by sakllam          ###   ########.fr       */
+/*   Updated: 2022/09/07 22:21:30 by sakllam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "AVL_body_old.hpp"
 #include <algorithm>
+#include <iostream>
+#include <string>
 
 int main()
 {
-    ft::AVL_body<int> x;
+    ft::AVL_body<std::string> x;
 
     // std::cout << x.size() << "\n";
     // for (int i = 0; i < 100000; i++)
     //     x.insert(i);
-    for (int i = 0; i < 100000; i++)
-        x.insert(i);
-    for (int i = 100000; i > 0; i--)
-        x.remove(i);
+    //   ft::AVL_body<std::string> x;
+
+    // std::cout << x.size() << "\n";
+    // for (int i = 0; i < 100000; i++)
+    //     x.insert(i);
+    std::string buffer = "a";
+    for (int i = 0; i < 100; i++)
+    {
+        buffer = buffer + "a";
+        std::cout << buffer << "\n";
+        x.insert(buffer);
+    }
+    // for (int i = 100000; i > 0; i--)
+    //     x.remove(i);
     x.printing();
     // x.insert(2);
     // x.insert(1);

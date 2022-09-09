@@ -6,7 +6,7 @@
 /*   By: sakllam <sakllam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 21:28:49 by sakllam           #+#    #+#             */
-/*   Updated: 2022/09/07 21:30:41 by sakllam          ###   ########.fr       */
+/*   Updated: 2022/09/08 13:50:41 by sakllam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ namespace ft
     {
         typedef T type_name;
 
-        type_name       value;
+        type_name       *value;
         avl<type_name>  *right;  
         avl<type_name>  *left;
         int             height;
@@ -79,7 +79,7 @@ namespace ft
         {
             avl<T> *c = alloc.allocate(1);
             c->height = 1;
-            c->value = value;
+            c->value = new type_name(value);
             c->left = NULL;
             c->right = NULL;
             return c;
@@ -91,13 +91,13 @@ namespace ft
                 *root = _new;
                 return;
             }
-            if (cmp((*root)->value, _new->value))
-                insert_helper(&((*root)->right), _new);
-            else if (cmp(_new->value, (*root)->value))
+            if (cmp(*((*root)->value), *(_new->value)))
+               insert_helper(&((*root)->right), _new);
+            else if (cmp(*(_new->value), *((*root)->value)))
                 insert_helper(&((*root)->left), _new);
             else
                 return;
-            (*root)->height = heightcount(*root);;
+            (*root)->height = heightcount(*root);
             balancing(root);
         }
         int heightcount(avl<type_name> *root)
@@ -143,9 +143,9 @@ namespace ft
         {
             if (*root == NULL)
                 return ;
-            if (cmp((*root)->value, value))
+            if (cmp(*((*root)->value), value))
                 remove_helper(&((*root)->right), value);
-            else if (cmp(value, (*root)->value))
+            else if (cmp(value, *((*root)->value)))
                 remove_helper(&((*root)->left), value);
             else
             {
@@ -176,7 +176,7 @@ namespace ft
                 }
                 avl<T> *deep = deepest((*root)->left);
                 (*root)->value = deep->value;
-                remove_helper(&((*root)->left), deep->value);
+                remove_helper(&((*root)->left), *((*root)->value));
             }
             (*root)->height = heightcount(*root);
             balancing(root);
@@ -185,9 +185,12 @@ namespace ft
         {
             if (root == NULL)
               return false;
-            if (root->value ==  value)
+            if (cmp(*(root->value), value))
+                return  find_helper(root->right, value);
+            else if (cmp(value, *(root->value)))
+                return find_helper(root->left, value);
+            else
                 return true;
-            return find_helper(root->left, value) || find_helper(root->right, value);
         }
         public :
             AVL_body() : root(NULL) {}
